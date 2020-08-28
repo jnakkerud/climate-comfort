@@ -30,7 +30,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "./node_modules/alasql/dist/alasql.min.js"
+            ]
           },
           "configurations": {
             "production": {
