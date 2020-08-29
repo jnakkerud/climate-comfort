@@ -10,11 +10,15 @@ import { ClimateScoreService } from './climate-score.service';
 export class AppComponent {
   title = 'climate-comfort';
 
+  network = 'CA_ASOS';
+  station = 'OAK';
+
   constructor(private climateScoreService: ClimateScoreService) {}
 
   onClick(): void {
     // load the data
-    this.climateScoreService.score()
+
+    this.climateScoreService.score(this.network, this.station)
     .then(res => {
       console.log('result', res);
     }, err => console.log(err));

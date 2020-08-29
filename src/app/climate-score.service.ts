@@ -29,9 +29,9 @@ export class ClimateScoreService {
     constructor(private dataLoader: DataLoaderService) { }
 
     // return a score
-    async score(): Promise<Map<string, number>> {
+    async score(network: string, station: string): Promise<Map<string, number>> {
 
-        const data = await this.dataLoader.load();
+        const data = await this.dataLoader.load(network, station);
 
         const resultMap = new Map<string, number>();
 

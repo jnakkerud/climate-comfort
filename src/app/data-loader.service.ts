@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+
+const TEST = false;
+
 const REQUIRED_COLUMNS = [
     'day',
     'max_temp_f',
@@ -16,25 +19,24 @@ export class DataLoaderService {
 
     constructor(private httpClient: HttpClient) { }
 
-    load(): Promise<any> {
-        // get the data
-        return new Promise<any>(resolve => {
-            this.httpClient.get('https://mesonet.agron.iastate.edu/cgi-bin/request/daily.py?network=KS_ASOS&stations=LWC&year1=2010&month1=1&day1=1&year2=2020&month2=1&day2=1', {responseType: 'text'}).subscribe((data) => {
-                const processed = this.convertCSV(data);
-                resolve(processed);
-            });
-        });
-
-        // process
-
+    load(network: string, station: string): Promise<any> {
         // TEST
-        /*return new Promise<any>(resolve => {
-            this.httpClient.get('assets/daily-test.csv', {responseType: 'text'}).subscribe((data) => {
-                const processed = this.convertCSV(data);
-                resolve(processed);
+        if (TEST) {
+            return new Promise<any>(resolve => {
+                this.httpClient.get('assets/daily-test.csv', {responseType: 'text'}).subscribe((data) => {
+                    const processed = this.convertCSV(data);
+                    resolve(processed);
+                });
             });
-        });*/
-
+        } else {
+            // TODO lookup network and station to find limitations like date range
+            return new Promise<any>(resolve => {
+                this.httpClient.get(`https://mesonet.agron.iastate.edu/cgi-bin/request/daily.py?network=${network}&stations=${station}&year1=2010&month1=1&day1=1&year2=2020&month2=1&day2=1`, {responseType: 'text'}).subscribe((data) => {
+                    const processed = this.convertCSV(data);
+                    resolve(processed);
+                });
+            });
+        }
     }
 
     // Convert CSV to array of objects
@@ -54,10 +56,7 @@ export class DataLoaderService {
                 }
             }
 
-            // Remove missing values
-            //if (obj['max_temp_f'] !== 'None') {
-                result.push(obj);
-            //}
+            result.push(obj);
 
         }
 
