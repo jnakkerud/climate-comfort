@@ -2,3 +2,11 @@
 <input [(ngModel)]="station" placeholder="Station">
 
 <button (click)="onClick()">Do it</button>
+
+<div class="scoreContainer">
+    <div *ngFor="let card of cards" class="card">
+        <ul *ngFor="let item of card | keyvalue">
+            <li>{{item.key}}: {{item.value}}</li>
+          </ul>
+    </div>
+</div>
