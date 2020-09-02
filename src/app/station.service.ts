@@ -21,12 +21,11 @@ export class StationService {
     // Return a csv file
     private getStations(network: string): Promise<any> {
         // https://mesonet.agron.iastate.edu/sites/networks.php?network=IA_ASOS&format=csv&nohtml=on
-        return new Promise<any>(resolve => {
-            // TODO handle timed out requests
+        return new Promise<any>((resolve, reject) => {
             this.httpClient.get(`https://mesonet.agron.iastate.edu/sites/networks.php?network=${network}&format=csv&nohtml=on`,
                 {responseType: 'text'}).subscribe((data) => {
                 resolve(data);
-            });
+            }, error =>  reject(error));
         });
     }
 

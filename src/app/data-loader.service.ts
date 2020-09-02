@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-
 const TEST = false;
 
 const REQUIRED_COLUMNS = [
@@ -29,11 +28,15 @@ export class DataLoaderService {
                 });
             });
         } else {
-            return new Promise<any>(resolve => {
+            return new Promise<any>((resolve, reject) => {
                 this.httpClient.get(`https://mesonet.agron.iastate.edu/cgi-bin/request/daily.py?network=${network}&stations=${station}&year1=${year}&month1=1&day1=1&year2=2020&month2=1&day2=1`, {responseType: 'text'}).subscribe((data) => {
-                    const processed = this.convertCSV(data);
-                    resolve(processed);
-                });
+                    try {
+                        const processed = this.convertCSV(data);
+                        resolve(processed);
+                    } catch (ex) {
+                        reject(ex);
+                    }
+                }, error =>  reject(error));
             });
         }
     }
@@ -43,6 +46,10 @@ export class DataLoaderService {
         const lines = data.split(/\r|\n|\r/);
         const headers = lines[0].split(',');
         const result = [];
+
+        if (!this.isValid(lines)) {
+            throw new Error('Invalid data');
+        }
 
         for (let i = 1; i < lines.length - 1; i++) {
 
@@ -55,14 +62,38 @@ export class DataLoaderService {
                 }
             }
 
-            // TODO validate the data, i.e data does not have enough required columns to be accurate
-            // For now, just count invalid, and throw an exception when threshold is met
-
             result.push(obj);
 
         }
 
         return result;
+    }
+
+    // Validate the data, i.e data does not have enough required columns to be accurate
+    // For now, just count invalid, and throw an exception when threshold is met
+    isValid(lines: string[]): boolean {
+        let counter = 0;
+        const headers = lines[0].split(',');
+
+        if (lines.length < 365) {
+            return false;
+        }
+
+        // just the first 50
+        for (let i = 1; i < 50; i++) {
+
+            const currentLine = lines[i].split(',');
+
+            for (let j = 0; j < headers.length; j++) {
+                const column = headers[j];
+                if (column === 'max_temp_f' || column === 'min_temp_f' || column === 'precip_in') {
+                    if (currentLine[j] === 'None') {
+                        counter++;
+                    }
+                }
+            }
+        }
+        return counter < 15;
     }
 
 
