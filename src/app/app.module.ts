@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 
 import { DataLoaderService } from './data-loader.service';
 import { ClimateScoreService } from './climate-score.service';
+import { StationService } from './station.service';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,7 @@ import { ClimateScoreService } from './climate-score.service';
     HttpClientModule,
     FormsModule
   ],
-  providers: [DataLoaderService, ClimateScoreService],
+  providers: [DataLoaderService, ClimateScoreService, StationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

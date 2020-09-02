@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 
 import { DataLoaderService } from './data-loader.service';
+import { Station } from './station.service';
 
 import alasql from 'alasql';
-import { from } from 'rxjs';
 
 export interface ScoreStrategy {
     name(): string;
@@ -29,9 +29,18 @@ export class ClimateScoreService {
     constructor(private dataLoader: DataLoaderService) { }
 
     // return a score
-    async score(network: string, station: string): Promise<Map<string, number>> {
+    async score(station: Station): Promise<Map<string, number>> {
+        // Start 2010
+        let year = station.begints.getFullYear();
+        if (year < 2010) {
+            year = 2010;
+        } else if (year >= 2010 && year < 2014) {
+            year = 2011;
+        } else {
+            // TODO throw an exception
+        }
 
-        const data = await this.dataLoader.load(network, station);
+        const data = await this.dataLoader.load(station.iem_network, station.stid, year);
 
         const resultMap = new Map<string, number>();
 
@@ -121,14 +130,6 @@ class PleasantDaysScore implements ScoreStrategy {
         return new Promise<any>(resolve => {
             alasql.promise('SELECT AVG(cnt) as days from (SELECT COUNT(*) as cnt FROM ? WHERE max_temp_f >= 68.0 AND max_temp_f <= 85.0 AND precip_in = 0.0 GROUP BY YEAR(day))', [data])
                 .then((result) => {
-                    //console.log(result);
-
-                    // https://codepen.io/yfain/pen/veKdwW?editors=1011
-                    //const source = from(result).average((x) => {
-                    //    return x.cnt;
-                    //});
-
-                    // const n = 124;
                     resolve(result[0].days);
                 }).catch((err) => {
                     console.log('Error:', err);

@@ -19,7 +19,7 @@ export class DataLoaderService {
 
     constructor(private httpClient: HttpClient) { }
 
-    load(network: string, station: string): Promise<any> {
+    load(network: string, station: string, year: number): Promise<any> {
         // TEST
         if (TEST) {
             return new Promise<any>(resolve => {
@@ -29,9 +29,8 @@ export class DataLoaderService {
                 });
             });
         } else {
-            // TODO lookup network and station to find limitations like date range
             return new Promise<any>(resolve => {
-                this.httpClient.get(`https://mesonet.agron.iastate.edu/cgi-bin/request/daily.py?network=${network}&stations=${station}&year1=2010&month1=1&day1=1&year2=2020&month2=1&day2=1`, {responseType: 'text'}).subscribe((data) => {
+                this.httpClient.get(`https://mesonet.agron.iastate.edu/cgi-bin/request/daily.py?network=${network}&stations=${station}&year1=${year}&month1=1&day1=1&year2=2020&month2=1&day2=1`, {responseType: 'text'}).subscribe((data) => {
                     const processed = this.convertCSV(data);
                     resolve(processed);
                 });
@@ -55,6 +54,9 @@ export class DataLoaderService {
                     obj[headers[j]] = this.convert(headers[j], currentLine[j]);
                 }
             }
+
+            // TODO validate the data, i.e data does not have enough required columns to be accurate
+            // For now, just count invalid, and throw an exception when threshold is met
 
             result.push(obj);
 
