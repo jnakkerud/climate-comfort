@@ -34,6 +34,12 @@ export class AppComponent {
 
   }
 
+  onSearch(): void {
+    this.stationService.search(this.stid).then(result => {
+      console.log(result);
+    }, err => this.showError(err));
+  }
+
   private showError(err: string): void {
     this.cards.push({
       network: this.network,
@@ -48,7 +54,7 @@ export class AppComponent {
     this.climateScoreService.score(station).then(res => {
 
       const card: Card = {
-        network: station.iem_network,
+        network: station.station_type,
         station: station.station_name
       };
 
