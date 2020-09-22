@@ -1,12 +1,15 @@
-<input [(ngModel)]="network" placeholder="Network">
-<input [(ngModel)]="stid" placeholder="Station ID">
-
-<button (click)="onSearch()">Search</button>
-
-<div class="scoreContainer">
-    <div *ngFor="let card of cards" class="card">
-        <ul *ngFor="let item of card | keyvalue">
-            <li>{{item.key}}: {{item.value}}</li>
-          </ul>
-    </div>
-</div>
+<form [formGroup]="myForm" class="example-form">
+    <mat-form-field class="example-full-width">
+      <input type="text"
+             placeholder="Search for station"
+             aria-label="Search"
+             matInput
+             formControlName="search"
+             [matAutocomplete]="auto">
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedStation($event.option.value)" [displayWith]="displayFn">
+        <mat-option *ngFor="let station of filteredStations | async" [value]="station">
+          {{station.station_name}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+</form>

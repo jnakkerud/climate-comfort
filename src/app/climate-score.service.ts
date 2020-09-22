@@ -15,10 +15,10 @@ function getHumidex(tempAveHigh: number, dewPointAveHigh: number): number {
 }
 
 function fhToCel(fh: number): number {
-  return (fh - 32) * 5 / 9;
+    return (fh - 32) * 5 / 9;
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class ClimateScoreService {
 
     strategies: ScoreStrategy[] = [
@@ -66,9 +66,9 @@ class NumbeoScore implements ScoreStrategy {
                 .then((result) => {
                     //  TODO can dewpoint be converted to celcius ?
                     const n = this.calculateScore(fhToCel(result[0].avg_max_temp),
-                    fhToCel(result[0].avg_min_temp),
-                    fhToCel(result[0].avg_max_dewpoint),
-                    fhToCel(result[0].avg_min_dewpoint));
+                        fhToCel(result[0].avg_min_temp),
+                        fhToCel(result[0].avg_max_dewpoint),
+                        fhToCel(result[0].avg_min_dewpoint));
                     resolve(n);
                 }).catch((err) => {
                     console.log('Error:', err);

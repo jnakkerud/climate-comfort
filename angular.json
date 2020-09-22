@@ -28,10 +28,14 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
               "src/styles.scss"
             ],
             "scripts": [
               "./node_modules/alasql/dist/alasql.min.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "lodash"
             ]
           },
           "configurations": {
@@ -94,6 +98,7 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -125,6 +130,7 @@
           }
         }
       }
-    }},
+    }
+  },
   "defaultProject": "climate-comfort"
 }

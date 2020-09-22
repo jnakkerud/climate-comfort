@@ -1,70 +1,68 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { Observable, from } from 'rxjs';
+import { debounceTime, switchMap } from 'rxjs/operators';
 
 import { ClimateScoreService } from './climate-score.service';
 import { StationService, Station } from './station.service';
 
 export interface Card {
-  network: string;
-  station: string;
-  // scores
-  [index: string]: number | string;
+    network: string;
+    station: string;
+    // scores
+    [index: string]: number | string;
 }
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'climate-comfort';
+export class AppComponent implements OnInit {
+    title = 'climate-comfort';
 
-  network = 'CA_ASOS';
-  stid = 'OAK';
+    filteredStations: Observable<Station[]>;
 
-  cards: Card[] = [];
-
-  constructor(private climateScoreService: ClimateScoreService, private stationService: StationService) { }
-
-  onClick(): void {
-
-    // Validate the network and station, get the year range
-    this.stationService.lookupStation(this.network, this.stid).then(station => {
-      this.score(station);
-    }, err => this.showError(err));
-
-  }
-
-  onSearch(): void {
-    this.stationService.search(this.stid).then(result => {
-      console.log(result);
-    }, err => this.showError(err));
-  }
-
-  private showError(err: string): void {
-    this.cards.push({
-      network: this.network,
-      station: this.stid,
-      error: err
+    myForm = new FormGroup({
+        search: new FormControl(null)
     });
-  }
 
-  private score(station: Station): void {
+    constructor(private climateScoreService: ClimateScoreService, private stationService: StationService) { }
 
-    // load the data
-    this.climateScoreService.score(station).then(res => {
+    ngOnInit(): void {
+        this.filteredStations = this.myForm.get('search').valueChanges
+            .pipe(
+                debounceTime(400),
+                switchMap(value => from(this.stationService.search(value)))
+            );
+    }
 
-      const card: Card = {
-        network: station.station_type,
-        station: station.station_name
-      };
+    private score(station: Station): void {
 
-      for (const prop of res) {
-        card[prop[0]] = prop[1];
-      }
+        // load the data
+        this.climateScoreService.score(station).then(res => {
 
-      this.cards.push(card);
+            const card: Card = {
+                network: station.station_type,
+                station: station.station_name
+            };
 
-    }, err => this.showError(err));
-  }
+            for (const prop of res) {
+                card[prop[0]] = prop[1];
+            }
+
+            // TODO
+            //this.cards.push(card);
+
+        }, err => console.log(err));
+    }
+
+    selectedStation(selected: Station): void {
+        console.log(selected);
+    }
+
+    displayFn(station: Station): string {
+        return station ? station.station_name : undefined;
+    }
 
 }
