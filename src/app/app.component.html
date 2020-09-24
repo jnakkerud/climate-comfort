@@ -1,15 +1,30 @@
-<form [formGroup]="myForm" class="example-form">
-    <mat-form-field class="example-full-width">
-      <input type="text"
-             placeholder="Search for station"
-             aria-label="Search"
-             matInput
-             formControlName="search"
-             [matAutocomplete]="auto">
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedStation($event.option.value)" [displayWith]="displayFn">
-        <mat-option *ngFor="let station of filteredStations | async" [value]="station">
-          {{station.station_name}}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
-</form>
+<div class="container">
+    <form [formGroup]="myForm" class="example-form">
+        <mat-form-field class="example-full-width">
+        <input type="text"
+                placeholder="Search for station"
+                aria-label="Search"
+                matInput
+                formControlName="search"
+                [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedStation($event.option.value)" [displayWith]="displayFn">
+            <mat-option *ngFor="let station of filteredStations | async" [value]="station">
+                <span>{{station.station_name}}</span> |
+                <small>Station Type: {{station.station_type}}</small>
+            </mat-option>
+        </mat-autocomplete>
+        </mat-form-field>
+    </form>
+</div>
+<div class="project-list">
+    <div *ngFor="let card of cards" class="project-list-item">       
+        <mat-card class="project-list-card">
+          <mat-card-title>{{card.station}} | {{card.network}}</mat-card-title>
+          <mat-card-content>
+              <ul *ngFor="let item of card | keyvalue">
+                  <li>{{item.key}}: {{item.value}}</li>
+              </ul>
+          </mat-card-content>
+        </mat-card>
+      </div>
+</div>

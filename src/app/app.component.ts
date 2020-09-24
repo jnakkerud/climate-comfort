@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable, from } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
@@ -20,6 +20,8 @@ export interface Card {
 })
 export class AppComponent implements OnInit {
     title = 'climate-comfort';
+
+    cards: Card[] = [];
 
     filteredStations: Observable<Station[]>;
 
@@ -51,18 +53,22 @@ export class AppComponent implements OnInit {
                 card[prop[0]] = prop[1];
             }
 
-            // TODO
-            //this.cards.push(card);
+            this.cards.push(card);
+
+            this.clearSelections();
 
         }, err => console.log(err));
     }
 
-    selectedStation(selected: Station): void {
-        console.log(selected);
+    selectedStation(selectedStation: Station): void {
+        this.score(selectedStation);
     }
 
     displayFn(station: Station): string {
         return station ? station.station_name : undefined;
     }
 
+    private clearSelections(): void {
+        this.myForm.get('search').reset(null, {emitEvent: false});
+    }
 }

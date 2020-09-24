@@ -43,7 +43,8 @@ export class ClimateScoreService {
 
         //const data = await this.dataLoader.load(station.iem_network, station.stid, year);
         // TODO handle station types
-        const data = await this.dataLoader.load('ASOS', station.nwsli, year);
+        const network = `${station.st.toUpperCase()}_ASOS`;
+        const data = await this.dataLoader.load(network, station.nwsli, year);
 
         const resultMap = new Map<string, number>();
 

@@ -1,3 +1,5 @@
+$small-breakpoint-width: 720px;
+
 .scoreContainer {
     margin: 24px;
 }
@@ -10,8 +12,45 @@
     min-width: 150px;
     max-width: 500px;
     width: 100%;
+    margin-top: 64px;
 }
   
 .example-full-width {
     width: 100%;
 }
+
+.container {
+    display: grid;
+    place-items: center;    
+}
+
+
+.project-list {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 16px;
+  
+    @media (max-width: $small-breakpoint-width) {
+      justify-content: center;
+    }
+}
+
+.project-list-item {
+    display: inline-block;
+    margin: 20px;
+    vertical-align: top;
+    width: 300px;
+  
+    .mat-card-title {
+      font-size: 20px;
+    }
+  
+    &, &:active, &:hover, &:focus {
+      text-decoration: none;
+    }
+  }
+  
+  .project-list-card-summary {
+    min-height: 4em;
+    margin-bottom: 8px;
+  }
