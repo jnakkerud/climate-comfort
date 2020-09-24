@@ -1,31 +1,22 @@
 $small-breakpoint-width: 720px;
 
-.scoreContainer {
-    margin: 24px;
-}
-
-.card {
-    margin: 8px;
-}
-
-.example-form {
+.criteria-form {
     min-width: 150px;
     max-width: 500px;
     width: 100%;
     margin-top: 64px;
 }
   
-.example-full-width {
+.field-full-width {
     width: 100%;
 }
 
-.container {
+.form-container {
     display: grid;
     place-items: center;    
 }
 
-
-.project-list {
+.result-list {
     display: flex;
     flex-wrap: wrap;
     padding: 16px;
@@ -35,7 +26,7 @@ $small-breakpoint-width: 720px;
     }
 }
 
-.project-list-item {
+.result-list-item {
     display: inline-block;
     margin: 20px;
     vertical-align: top;
@@ -48,9 +39,32 @@ $small-breakpoint-width: 720px;
     &, &:active, &:hover, &:focus {
       text-decoration: none;
     }
-  }
+}
   
-  .project-list-card-summary {
+.result-list-card-summary {
     min-height: 4em;
     margin-bottom: 8px;
+}
+
+a:link {
+    color: white;
+  }
+  
+  /* visited link */
+  a:visited {
+    color: white;
+  }
+  
+  /* mouse over link */
+  a:hover {
+    color: white;
+  }
+  
+  /* selected link */
+  a:active {
+    color: white;
+  }
+
+  a:link {
+    text-decoration: none;
   }
