@@ -47,7 +47,7 @@ export class StationService {
             this.stations = await this.getStations();
         }
         return new Promise<any>(resolve => {
-            const q = `SELECT * FROM ? WHERE station_name LIKE "${term}%"`;
+            const q = `SELECT * FROM ? WHERE station_name LIKE "${term}%" AND nwsli IS NOT NULL`;
             alasql.promise(q, [this.stations])
                 .then((result) => {
                     resolve(result);

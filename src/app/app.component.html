@@ -10,7 +10,7 @@
             <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedStation($event.option.value)" [displayWith]="displayFn">
                 <mat-option *ngFor="let station of filteredStations | async" [value]="station">
                     <span>{{station.station_name}}</span> |
-                    <small>Station Type: {{station.station_type}}</small>
+                    <small>Station Type: {{station.station_type}} | [{{station.nwsli}}]</small>
                 </mat-option>
             </mat-autocomplete>
         </mat-form-field>

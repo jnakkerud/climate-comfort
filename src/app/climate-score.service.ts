@@ -31,7 +31,6 @@ export class ClimateScoreService {
     // return a score
     async score(station: Station): Promise<Map<string, number>> {
         // Start 2010
-        //let year = station.begints.getFullYear();
         let year = station.start;
         if (year < 2010) {
             year = 2010;
@@ -41,10 +40,15 @@ export class ClimateScoreService {
             // TODO throw an exception
         }
 
-        //const data = await this.dataLoader.load(station.iem_network, station.stid, year);
-        // TODO handle station types
-        const network = `${station.st.toUpperCase()}_ASOS`;
-        const data = await this.dataLoader.load(network, station.nwsli, year);
+        let network = 'DCP';
+        if (station.station_type.includes('ASOS')) {
+            network = 'ASOS';
+        } else if (station.station_type.includes('COOP')) {
+            network = 'COOP';
+        }
+
+        const stNetwork = `${station.st.toUpperCase()}_${network}`;
+        const data = await this.dataLoader.load(stNetwork, station.nwsli, year);
 
         const resultMap = new Map<string, number>();
 
