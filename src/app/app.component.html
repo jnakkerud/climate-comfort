@@ -13,6 +13,9 @@
                     <small>Station Type: {{station.station_type}} | [{{station.nwsli}}]</small>
                 </mat-option>
             </mat-autocomplete>
+            <button type="button" mat-button *ngIf="dirty" matSuffix mat-icon-button aria-label="Clear" (click)="reset()">
+                <mat-icon>close</mat-icon>
+            </button>            
         </mat-form-field>
     </form>
 </div>

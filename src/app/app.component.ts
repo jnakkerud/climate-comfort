@@ -66,6 +66,10 @@ export class AppComponent implements OnInit {
         return station ? station.station_name : undefined;
     }
 
+    get dirty(): boolean {
+        return this.criteriaForm.get('search').dirty;
+    }
+
     private reset(): void {
         this.criteriaForm.get('search').reset(null, {emitEvent: false});
     }
