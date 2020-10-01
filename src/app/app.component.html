@@ -26,7 +26,8 @@
           <mat-card-subtitle>({{card.network}}) | <a href="{{card.location}}" target="_blank">Location</a></mat-card-subtitle>
           <mat-card-content>
               <ul *ngFor="let item of card.scores | keyvalue">
-                  <li>{{item.key}}: {{item.value | number}}</li>
+                <li *ngIf="item.value === 0; else elseBlock">{{item.key}}: N/A</li>
+                <ng-template #elseBlock><li>{{item.key}}: {{item.value | number}}</li></ng-template>                  
               </ul>
           </mat-card-content>
         </mat-card>

@@ -45,10 +45,15 @@ export class DataLoaderService {
     convertCSV(data: string): any[] {
         const lines = data.split(/\r|\n|\r/);
         const headers = lines[0].split(',');
-        const result = [];
+        const converted = [];
 
-        if (!this.isValid(lines)) {
+        if (lines.length < 365) {
             throw new Error('Invalid data');
+        }
+
+        const dataValidityCounter = {};
+        for (const c of REQUIRED_COLUMNS) {
+            dataValidityCounter[c] = 0;
         }
 
         for (let i = 1; i < lines.length - 1; i++) {
@@ -57,45 +62,26 @@ export class DataLoaderService {
             const currentLine = lines[i].split(',');
 
             for (let j = 0; j < headers.length; j++) {
-                if (REQUIRED_COLUMNS.indexOf(headers[j]) > -1) {
-                    obj[headers[j]] = this.convert(headers[j], currentLine[j]);
+                const column = headers[j];
+                if (REQUIRED_COLUMNS.indexOf(column) > -1) {
+                    const val = this.convert(column, currentLine[j]);
+                    if (val === null) {
+                        // counter
+                        dataValidityCounter[column]++;
+                    }
+                    obj[column] = val;
                 }
             }
 
-            result.push(obj);
-
+            converted.push(obj);
         }
+
+        const result = [];
+        result[0] = converted;
+        result[1] = dataValidityCounter;
 
         return result;
     }
-
-    // Validate the data, i.e data does not have enough required columns to be accurate
-    // For now, just count invalid, and throw an exception when threshold is met
-    isValid(lines: string[]): boolean {
-        let counter = 0;
-        const headers = lines[0].split(',');
-
-        if (lines.length < 365) {
-            return false;
-        }
-
-        // just the first 50
-        for (let i = 1; i < 50; i++) {
-
-            const currentLine = lines[i].split(',');
-
-            for (let j = 0; j < headers.length; j++) {
-                const column = headers[j];
-                if (column === 'max_temp_f' || column === 'min_temp_f' || column === 'precip_in') {
-                    if (currentLine[j] === 'None') {
-                        counter++;
-                    }
-                }
-            }
-        }
-        return counter < 15;
-    }
-
 
     convert(column: string, value: any): any {
         if (value === 'None') {

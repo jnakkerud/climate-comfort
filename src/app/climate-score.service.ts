@@ -8,6 +8,7 @@ import alasql from 'alasql';
 export interface ScoreStrategy {
     name(): string;
     score(data: any): Promise<number>;
+    validate(data: any): any;
 }
 
 function getHumidex(tempAveHigh: number, dewPointAveHigh: number): number {
@@ -48,13 +49,20 @@ export class ClimateScoreService {
         }
 
         const stNetwork = `${station.st.toUpperCase()}_${network}`;
-        const data = await this.dataLoader.load(stNetwork, station.nwsli, year);
+        const loaderData = await this.dataLoader.load(stNetwork, station.nwsli, year);
+
+        console.log('data validity', loaderData[1]);
 
         const resultMap = new Map<string, number>();
 
         for (const strategy of this.strategies) {
-            const val = await strategy.score(data);
-            resultMap.set(strategy.name(), val);
+            const data = strategy.validate(loaderData);
+            if (data) {
+                const val = await strategy.score(data);
+                resultMap.set(strategy.name(), val);
+            } else {
+                resultMap.set(strategy.name(), 0);
+            }
         }
 
         return new Promise<Map<string, number>>(resolve => {
@@ -64,6 +72,23 @@ export class ClimateScoreService {
 }
 
 class NumbeoScore implements ScoreStrategy {
+
+    requiredColumns = [
+        'max_temp_f',
+        'min_temp_f',
+        'max_dewpoint_f',
+        'min_dewpoint_f'
+    ];
+
+    validate(loaderData: any): any {
+        const dataValidityCounter = loaderData[1];
+        for (const c of this.requiredColumns) {
+            if (dataValidityCounter[c] >= 100) {
+                return null;
+            }
+        }
+        return loaderData[0];
+    }
 
     score(data: any): Promise<number> {
         return new Promise<any>(resolve => {
@@ -133,6 +158,22 @@ class NumbeoScore implements ScoreStrategy {
 }
 
 class PleasantDaysScore implements ScoreStrategy {
+
+    requiredColumns = [
+        'max_temp_f',
+        'min_temp_f',
+        'precip_in'
+    ];
+
+    validate(loaderData: any): any {
+        const dataValidityCounter = loaderData[1];
+        for (const c of this.requiredColumns) {
+            if (dataValidityCounter[c] >= 100) {
+                return null;
+            }
+        }
+        return loaderData[0];
+    }
 
     score(data: any): Promise<number> {
         return new Promise<any>(resolve => {
