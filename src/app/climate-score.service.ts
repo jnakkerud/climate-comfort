@@ -157,7 +157,25 @@ class NumbeoScore implements ScoreStrategy {
     }
 }
 
+/*
+*  See https://taraskaduk.com/posts/2019-02-18-weather/
+*  Max temp between 60 and 90
+*  Min temp between 40 and 70
+*  Mean temp between 55 and 75
+*  No percipitation
+*/
 class PleasantDaysScore implements ScoreStrategy {
+
+    SQL = `
+    SELECT Avg(cnt) AS days
+    FROM (SELECT Count(*) AS cnt
+        FROM ?
+        WHERE  mean_temp_f BETWEEN 55.0 AND 75.0
+               AND max_temp_f BETWEEN 60.0 AND 90.0
+               AND min_temp_f BETWEEN 40.0 AND 70.0
+               AND precip_in = 0.0
+        GROUP  BY Year(day))
+    `;
 
     requiredColumns = [
         'max_temp_f',
@@ -177,7 +195,7 @@ class PleasantDaysScore implements ScoreStrategy {
 
     score(data: any): Promise<number> {
         return new Promise<any>(resolve => {
-            alasql.promise('SELECT AVG(cnt) as days from (SELECT COUNT(*) as cnt FROM ? WHERE max_temp_f >= 68.0 AND max_temp_f <= 85.0 AND precip_in = 0.0 GROUP BY YEAR(day))', [data])
+            alasql.promise(this.SQL, [data])
                 .then((result) => {
                     resolve(result[0].days);
                 }).catch((err) => {

@@ -3,6 +3,10 @@ import { HttpClient } from '@angular/common/http';
 
 const TEST = false;
 
+const MAX_TEMP_F = 'max_temp_f';
+const MIN_TEMP_F = 'min_temp_f';
+const MEAN_TEMP_F = 'mean_temp_f';
+
 const REQUIRED_COLUMNS = [
     'day',
     'max_temp_f',
@@ -12,6 +16,13 @@ const REQUIRED_COLUMNS = [
     'precip_in',
     'avg_wind_speed_kts'
 ];
+
+function calcMean(maxTemp: number, minTemp: number): number {
+    if (maxTemp === null || minTemp === null) {
+        return null;
+    }
+    return (maxTemp + minTemp) / 2;
+}
 
 @Injectable({providedIn: 'root'})
 export class DataLoaderService {
@@ -72,6 +83,9 @@ export class DataLoaderService {
                     obj[column] = val;
                 }
             }
+
+            // add a mean temp
+            obj[MEAN_TEMP_F] = calcMean(obj[MAX_TEMP_F], obj[MIN_TEMP_F]);
 
             converted.push(obj);
         }
