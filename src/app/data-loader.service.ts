@@ -6,6 +6,9 @@ const TEST = false;
 const MAX_TEMP_F = 'max_temp_f';
 const MIN_TEMP_F = 'min_temp_f';
 const MEAN_TEMP_F = 'mean_temp_f';
+const PRECIP_IN = 'precip_in';
+const SNOW_IN = 'snow_in';
+
 
 const REQUIRED_COLUMNS = [
     'day',
@@ -14,6 +17,7 @@ const REQUIRED_COLUMNS = [
     'max_dewpoint_f',
     'min_dewpoint_f',
     'precip_in',
+    'snow_in',
     'avg_wind_speed_kts'
 ];
 
@@ -87,6 +91,9 @@ export class DataLoaderService {
             // add a mean temp
             obj[MEAN_TEMP_F] = calcMean(obj[MAX_TEMP_F], obj[MIN_TEMP_F]);
 
+            // Coalesce snow and precip
+            obj[PRECIP_IN] = Math.max(obj[PRECIP_IN], obj[SNOW_IN]);
+
             converted.push(obj);
         }
 
@@ -104,6 +111,11 @@ export class DataLoaderService {
 
         if (column === 'day') {
             return new Date(value);
+        }
+
+        // Note that value can be negative in some cases, which for reporting is 0
+        if (column === 'precip_in' || column === 'snow_in') {
+            return Math.max(value, 0.0);
         }
 
         // all other values should be floats
