@@ -9,7 +9,6 @@ const MEAN_TEMP_F = 'mean_temp_f';
 const PRECIP_IN = 'precip_in';
 const SNOW_IN = 'snow_in';
 
-
 const REQUIRED_COLUMNS = [
     'day',
     'max_temp_f',
@@ -91,7 +90,7 @@ export class DataLoaderService {
             // add a mean temp
             obj[MEAN_TEMP_F] = calcMean(obj[MAX_TEMP_F], obj[MIN_TEMP_F]);
 
-            // Coalesce snow and precip
+            // Coalesce snow and precip. TODO try in SQL using the COALESCE function
             obj[PRECIP_IN] = Math.max(obj[PRECIP_IN], obj[SNOW_IN]);
 
             converted.push(obj);

@@ -24,7 +24,8 @@ export class ClimateScoreService {
 
     strategies: ScoreStrategy[] = [
         new NumbeoScore(),
-        new PleasantDaysScore()
+        new PleasantDaysScore(),
+        //new MonzingoScore()
     ];
 
     constructor(private dataLoader: DataLoaderService) { }
@@ -112,25 +113,26 @@ class NumbeoScore implements ScoreStrategy {
 
     // https://www.numbeo.com/climate/indices_explained.jsp
     private calculateScore(tempAveHigh: number, tempAveLow: number, dewPointAveHigh: number, dewPointAveLow: number): number {
-        //first it is calculated in range [-30, 30] then multiplied 
+        // first it is calculated in range [-30, 30] then multiplied
         let base = 30;
         if (dewPointAveLow < 10) {
             base -= Math.pow(0.25 * (10 - dewPointAveLow), 1.2);
         }
 
-        //26 Severely high. Even deadly for asthma related illnesses
-        //24 Extremely uncomfortable, fairly oppressive	
-        //21 Very humid, quite uncomfortable
-        //18 Somewhat uncomfortable for most people at upper edge	
+        // https://weatherworksinc.com/news/humidity-vs-dewpoint
+        // 26 Severely high. Even deadly for asthma related illnesses
+        // 24 Extremely uncomfortable, fairly oppressive
+        // 21 Very humid, quite uncomfortable
+        // 18 Somewhat uncomfortable for most people at upper edge
         if (dewPointAveHigh > 18) {
             base -= Math.pow((dewPointAveHigh - 18), 1.2);  // 10^1.2 = 15.8
         }
 
-        //http://courses.washington.edu/me333afe/Comfort_Health.pdf
-        //37.7 very uncomfortable
-        //32 uncomfortable
-        //12 uncomfortable
-        //0 very uncomfortable
+        // http://courses.washington.edu/me333afe/Comfort_Health.pdf
+        // 37.7 very uncomfortable
+        // 32 uncomfortable
+        // 12 uncomfortable
+        // 0 very uncomfortable
         if (tempAveHigh > 31) {
             base -= Math.pow(tempAveHigh - 31, 1.5);  // 10 ^ 1.4 = 25, 10 ^ 1.5 = 31.6
         }
@@ -140,9 +142,9 @@ class NumbeoScore implements ScoreStrategy {
         }
 
         const humidex = getHumidex(tempAveHigh, dewPointAveHigh);
-        //humindex > 31 yellow
-        //humindex > 40 orange
-        //humindex > 46 red
+        // humindex > 31 yellow
+        // humindex > 40 orange
+        // humindex > 46 red
         if (humidex > 31) {
             base -= (humidex - 31) / 4.0;
         }
@@ -207,5 +209,53 @@ class PleasantDaysScore implements ScoreStrategy {
 
     name(): string {
         return 'Pleasant Days';
+    }
+}
+
+// Monzingo score of 120 - 130 is ideal
+class MonzingoScore implements ScoreStrategy {
+
+    // TODO BUG in typedef file for alasql
+	/*interface userDefinedFunction {
+		(...args: any[]): any;
+    }*/
+
+    SQL = 'SELECT AVG(monzingo(max_temp_f,max_dewpoint_f,avg_wind_speed_kts)) AS avg_monzingo  FROM ?';
+
+    requiredColumns = [
+        'max_dewpoint_f',
+        'max_temp_f',
+        'avg_wind_speed_kts'
+    ];
+
+    constructor() {
+        /*alasql.fn.monzingo = (temp: any, dewpoint: any, windSpeed): any => {
+            return (temp + dewpoint) - windSpeed;
+        };*/
+    }
+
+    validate(loaderData: any): any {
+        const dataValidityCounter = loaderData[1];
+        for (const c of this.requiredColumns) {
+            if (dataValidityCounter[c] >= 100) {
+                return null;
+            }
+        }
+        return loaderData[0];
+    }
+
+    score(data: any): Promise<number> {
+        return new Promise<any>(resolve => {
+            alasql.promise(this.SQL, [data])
+                .then((result) => {
+                    resolve(result[0].avg_monzingo);
+                }).catch((err) => {
+                    console.log('Error:', err);
+                });
+        });
+    }
+
+    name(): string {
+        return 'Monzingo Score';
     }
 }

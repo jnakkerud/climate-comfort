@@ -59,6 +59,7 @@ export class AppComponent implements OnInit {
     }
 
     selectedStation(selectedStation: Station): void {
+        console.log('selected station', selectedStation);
         this.score(selectedStation);
     }
 
