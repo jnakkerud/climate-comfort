@@ -43,14 +43,19 @@ export class ClimateScoreService {
         }
 
         let network = 'DCP';
+        let stationId = station.nwsli;
         if (station.station_type.includes('ASOS')) {
+            // !!! For some reason, Hawaii stations use icao station ID
+            if (station.st === 'HI') {
+                stationId = station.icao;
+            }
             network = 'ASOS';
         } else if (station.station_type.includes('COOP')) {
             network = 'COOP';
         }
 
         const stNetwork = `${station.st.toUpperCase()}_${network}`;
-        const loaderData = await this.dataLoader.load(stNetwork, station.nwsli, year);
+        const loaderData = await this.dataLoader.load(stNetwork, stationId, year);
 
         console.log('data validity', loaderData[1]);
 
