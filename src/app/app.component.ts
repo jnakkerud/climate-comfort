@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
         this.filteredStations = this.criteriaForm.get('search').valueChanges
             .pipe(
                 debounceTime(400),
-                switchMap(value => from(this.stationService.search(value)))
+                switchMap(value => from(this.search(value)))
             );
     }
 
@@ -73,5 +73,20 @@ export class AppComponent implements OnInit {
 
     private reset(): void {
         this.criteriaForm.get('search').reset(null, {emitEvent: false});
+    }
+
+    private search(term: string): Promise<Station[]> {
+        // User selected
+        if (typeof term === 'object') {
+            return new Promise<any>(resolve => resolve([]));
+        }
+
+        // User backspace to empty, then reset
+        if (term.trim().length === 0) {
+            this.reset();
+            return new Promise<any>(resolve => resolve([]));
+        }
+
+        return this.stationService.search(term);
     }
 }

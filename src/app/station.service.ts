@@ -38,11 +38,6 @@ export class StationService {
     }
 
     async search(term: string | number): Promise<Station[]> {
-
-        if (typeof term === 'object') {
-            return new Promise<any>(resolve => resolve([]));
-        }
-
         if (!this.stations) {
             this.stations = await this.getStations();
         }
