@@ -25,7 +25,7 @@ export class ClimateScoreService {
     strategies: ScoreStrategy[] = [
         new NumbeoScore(),
         new PleasantDaysScore(),
-        //new MonzingoScore()
+        new MonzingoScore()
     ];
 
     constructor(private dataLoader: DataLoaderService) { }
@@ -229,9 +229,9 @@ class MonzingoScore implements ScoreStrategy {
     ];
 
     constructor() {
-        /*alasql.fn.monzingo = (temp: any, dewpoint: any, windSpeed): any => {
+        alasql.fn.monzingo = (temp: any, dewpoint: any, windSpeed): any => {
             return (temp + dewpoint) - windSpeed;
-        };*/
+        };
     }
 
     validate(loaderData: any): any {
