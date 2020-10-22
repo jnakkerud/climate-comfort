@@ -1,27 +1,48 @@
-# ClimateComfort
+# Climate Comfort
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.7.
+Web application that uses weather data to derive a score for a location.  The location is the name of the weather station that should contain minimal metrics like max and min daily temperature and precipitation.  Currently locations are US only.  Daily weather data is curtesy of [Iowa State University](https://mesonet.agron.iastate.edu/)
 
-## Development server
+Scores for climate comfort are:
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+* [Numbeo](https://www.numbeo.com/climate/indices_explained.jsp):  (requires min and max dew point)
+* [Pleasant days in the year](https://taraskaduk.com/posts/2019-02-18-weather/)
+* [Monzingo](http://www.city-data.com/forum/weather/1180993-us-cities-comfortable-dew-points-year-2.html)
 
-## Code scaffolding
+Scores are calculated in the browser:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+* Fetch daily weather data for the last ten years if possible
+* Convert the data from CSV to json
+* Load the data into alasql and use sql to get a result
+* Apply a calculation function if needed
 
-## Build
+## Getting started
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+### Prerequisites
 
-## Running unit tests
+Latest [Node.js](https://www.nodejs.org/) is installed.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+**1. Install Angular CLI**:
+```
+npm install -g @angular/cli
+```
+**2. Run**:
+```
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`
+```
 
-## Running end-to-end tests
+## Technology
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+* Angular
+* Angular Material
+* alasql
 
-## Further help
+## TODO
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+There is a bug in alasql where user defined functions are not accepting multiple parameters.  Quick and dirty fix is to change interface userDefinedFunction in the node_modules/alasql/dist/alasql.d.ts file:
+
+```
+	interface userDefinedFunction {
+		(...args: any[]): any;
+	}
+```
+
