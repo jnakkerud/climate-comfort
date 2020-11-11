@@ -49,6 +49,11 @@ export class ClimateScoreService {
             if (station.st === 'HI') {
                 stationId = station.icao;
             }
+            // try the faa name
+            if (!station.nwsli) {
+                stationId = station.faa;
+            }
+
             network = 'ASOS';
         } else if (station.station_type.includes('COOP')) {
             network = 'COOP';
@@ -118,6 +123,7 @@ class NumbeoScore implements ScoreStrategy {
 
     // https://www.numbeo.com/climate/indices_explained.jsp
     private calculateScore(tempAveHigh: number, tempAveLow: number, dewPointAveHigh: number, dewPointAveLow: number): number {
+
         // first it is calculated in range [-30, 30] then multiplied
         let base = 30;
         if (dewPointAveLow < 10) {
@@ -194,7 +200,7 @@ class PleasantDaysScore implements ScoreStrategy {
     validate(loaderData: any): any {
         const dataValidityCounter = loaderData[1];
         for (const c of this.requiredColumns) {
-            if (dataValidityCounter[c] >= 100) {
+            if (dataValidityCounter[c] >= 145) {
                 return null;
             }
         }

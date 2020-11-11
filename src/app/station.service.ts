@@ -8,7 +8,7 @@ export interface Station {
     coop: number;  // NWS Cooperative network ID, assigned by NCEI
     wban: number;  // WBAN identifier (Weather-Bureau-Army-Navy), assigned by NCEI
     icao: string;  // ICAO ID, used for geographical locations throughout the world
-    faa: number;   // FAA ID, alpha-numeric, managed by USDT Federal Aviation Administration
+    faa: string;   // FAA ID, alpha-numeric, managed by USDT Federal Aviation Administration
     nwsli: string; // NWS Location Identifer
     wmo: number;   //  ID assigned by World Meteorological Organization
     station_name: string;
@@ -42,7 +42,7 @@ export class StationService {
             this.stations = await this.getStations();
         }
         return new Promise<any>(resolve => {
-            const q = `SELECT * FROM ? WHERE station_name LIKE "${term}%" AND nwsli IS NOT NULL`;
+            const q = `SELECT * FROM ? WHERE station_name LIKE "${term}%" AND (nwsli IS NOT NULL OR faa IS NOT NULL)`;
             alasql.promise(q, [this.stations])
                 .then((result) => {
                     resolve(result);

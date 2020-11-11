@@ -104,17 +104,19 @@ export class DataLoaderService {
     }
 
     convert(column: string, value: any): any {
+        if (column === 'precip_in' || column === 'snow_in') {
+            if (value === 'None') {
+                value = 0.0;
+            }
+            return Math.max(value, 0.0);
+        }
+
         if (value === 'None') {
             return null;
         }
 
         if (column === 'day') {
             return new Date(value);
-        }
-
-        // Note that value can be negative in some cases, which for reporting is 0
-        if (column === 'precip_in' || column === 'snow_in') {
-            return Math.max(value, 0.0);
         }
 
         // all other values should be floats
