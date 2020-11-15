@@ -105,7 +105,6 @@ class NumbeoScore implements ScoreStrategy {
         return new Promise<any>(resolve => {
             alasql.promise('SELECT AVG(max_temp_f) AS avg_max_temp, AVG(min_temp_f) as avg_min_temp, AVG(max_dewpoint_f) AS avg_max_dewpoint, AVG(min_dewpoint_f) AS avg_min_dewpoint FROM ?', [data])
                 .then((result) => {
-                    //  TODO can dewpoint be converted to celcius ?
                     const n = this.calculateScore(fhToCel(result[0].avg_max_temp),
                         fhToCel(result[0].avg_min_temp),
                         fhToCel(result[0].avg_max_dewpoint),
@@ -122,6 +121,7 @@ class NumbeoScore implements ScoreStrategy {
     }
 
     // https://www.numbeo.com/climate/indices_explained.jsp
+    // TODO revisit the calculation as it seems wrong for places like: PENSACOLA REGIONAL AP
     private calculateScore(tempAveHigh: number, tempAveLow: number, dewPointAveHigh: number, dewPointAveLow: number): number {
 
         // first it is calculated in range [-30, 30] then multiplied
